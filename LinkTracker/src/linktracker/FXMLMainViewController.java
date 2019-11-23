@@ -54,6 +54,7 @@ public class FXMLMainViewController {
 
     private List<WebPage> webpages;
     private List<String> links;
+    private int ulrProcessed;
 
     @FXML
     void initialize() {
@@ -69,6 +70,7 @@ public class FXMLMainViewController {
 
         webpages = new ArrayList<WebPage>();
         links = new ArrayList<String>();
+        ulrProcessed = 0;
     }
 
     public void loadData(ActionEvent actionEvent) {
@@ -91,9 +93,9 @@ public class FXMLMainViewController {
             for (WebPage w: webpages) {
                 webNamesList.add(w.getName());
             }
-            totalPages.setText(String.valueOf(webpages.size()));
             webpageListview.setItems(webNamesList);
 
+            updateText();
             utils.MessageUtils.showMessage(
                     webpageListview.getItems().size() + " urls loaded");
         }
@@ -117,6 +119,7 @@ public class FXMLMainViewController {
                         strm -> manager.submit(getCallable(strm))).collect(Collectors.toList()
                 );
 
+                manager.submit((Runnable) futures);
                 System.out.println("Finish");
 
             }catch (Exception e){}
@@ -128,12 +131,13 @@ public class FXMLMainViewController {
     }
 
     public void clear(ActionEvent actionEvent) {
-        linkListview.setItems(null);
+        ulrProcessed = 0;
         webpages.clear();
+        linkListview.setItems(null);
         webpageListview.setItems(null);
         totalLinks.setText("0");
         totalPages.setText("0");
-        totalProcessed.setText("0");
+        updateText();
     }
 
     public void selectWeb(MouseEvent mouseEvent) {
@@ -149,11 +153,19 @@ public class FXMLMainViewController {
             try
             {
                 web.setLniksInside(LinkReader.getLinks(web.getUrl()));
+                ulrProcessed++;
+                System.out.println("URL processed " + web.getName());
+
             } catch (Exception e) {
                 utils.MessageUtils.showError("Error while loading the urls");
             }
             return null;
         };
+    }
+
+    public void updateText(){
+        totalProcessed.setText(ulrProcessed+"");
+        totalPages.setText(String.valueOf(webpages.size()));
     }
 
 }
