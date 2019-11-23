@@ -20,6 +20,11 @@ public class WebPage {
         this.lniksInside = lniksInside;
     }
 
+    @Override
+    public String toString() {
+        return name;
+    }
+
     public void addLink(String link) {
         lniksInside.add(link);
     }
