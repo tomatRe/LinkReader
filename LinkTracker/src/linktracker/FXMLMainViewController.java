@@ -143,8 +143,17 @@ public class FXMLMainViewController {
     public void selectWeb(MouseEvent mouseEvent) {
         int wp = webpageListview.getSelectionModel().getSelectedIndex();
 
-        if (wp >= 0)
-            links = webpages.get(wp).getLniksInside();
+        if (wp >= 0){
+            ObservableList<String> labels = FXCollections.observableArrayList();
+            WebPage web = webpages.get(wp);
+
+            for (String str: web.getLniksInside()) {
+                labels.add(str);
+            }
+
+            linkListview.setItems(labels);
+        }
+
     }
 
     public Callable<WebPage> getCallable(WebPage web)
@@ -154,7 +163,7 @@ public class FXMLMainViewController {
             {
                 web.setLniksInside(LinkReader.getLinks(web.getUrl()));
                 ulrProcessed++;
-                System.out.println("URL processed " + web.getName());
+                System.out.println("URL processed: " + web.getName());
 
             } catch (Exception e) {
                 utils.MessageUtils.showError("Error while loading the urls");
@@ -166,6 +175,7 @@ public class FXMLMainViewController {
     public void updateText(){
         totalProcessed.setText(ulrProcessed+"");
         totalPages.setText(String.valueOf(webpages.size()));
+        totalLinks.setText(String.valueOf(links.size()));
     }
 
 }
